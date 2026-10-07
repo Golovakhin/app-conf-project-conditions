@@ -1,102 +1,3 @@
-\# Правила работы в команде "Кондиции"
-
-
-
-\## Git-стратегия
-
-
-
-Мы используем Git Flow.
-
-
-
-\### Ветвление
-
-\- `main` — стабильная версия
-
-\- `develop` — интеграционная ветка
-
-\- `feature/\[название]` — новые функции
-
-\- `bugfix/\[название]` — исправление багов
-
-
-
-\### Коммиты
-
-Используем \[Conventional Commits](https://www.conventionalcommits.org/):
-
-\- `feat:` новая функция
-
-\- `fix:` исправление бага
-
-\- `docs:` изменения в документации
-
-\- `style:` форматирование кода
-
-\- `refactor:` рефакторинг
-
-\- `test:` добавление тестов
-
-\- `chore:` рутинные задачи
-
-
-
-Пример: `feat: add user authentication endpoint`
-
-
-
-\## Code Review
-
-
-
-\- Каждый PR требует минимум 1 approval от другого участника команды
-
-\- Ревьюер проверяет: стиль кода, архитектуру, наличие тестов
-
-\- Автор отвечает на все комментарии в PR
-
-
-
-\## Встречи команды
-
-
-
-\- Частота: 2 раза в неделю
-
-\- Канал связи: Telegram (ссылка будет добавлена)
-
-\- Время ответа на сообщения: в течение 24 часов
-
-
-
-\## Разрешение конфликтов
-
-
-
-1\. Обсуждение в команде
-
-2\. Голосование (большинство голосов)
-
-3\. Если не можем решить — обращаемся к преподавателю
-
-
-
-\## Контакты
-
-
-
-\- Team Lead: Монахов Георгий — @Surdis1
-
-\- Backend Developer: Головахин Андрей — @teftelh
-
-\- Frontend / DevOps: Савченко Станислав — @ssav4enkoo
-
-
-
-
-
-
 # Правила работы в команде «Кондиции»
 
 Проект: CarRentSGM — приложение для управления арендой автомобилей.
@@ -105,11 +6,17 @@
 
 Используем GitHub Flow.
 
+```text
 main ────●────────────────────●────>
           \                  /
            ●──────●─────────
            feature/version-endpoint
-                     PR → review → approval
+                     │
+                     ├── PR создан
+                     ├── review (ответ в течение 24 часов)
+                     ├── approval другого участника
+                     └── merge в main → ветка удалена
+```
 
 Единственная долгоживущая ветка — main.
 Рабочая ветка создаётся от актуальной main.
@@ -126,12 +33,14 @@ docs/adr/001-branching-strategy.md.
 Описание пишем латиницей в нижнем регистре, слова разделяем дефисами.
 
 Типы:
+
 - feature/ — новые функции;
 - bugfix/ — исправления ошибок;
 - docs/ — документация;
 - chore/ — настройки и зависимости.
 
 Примеры:
+
 - feature/version-endpoint
 - bugfix/health-response
 - docs/pr-template
@@ -142,6 +51,7 @@ docs/adr/001-branching-strategy.md.
 Формат: <тип>: <описание изменения>.
 
 Используем Conventional Commits:
+
 - feat — новая функция;
 - fix — исправление ошибки;
 - docs — документация;
@@ -152,6 +62,7 @@ docs/adr/001-branching-strategy.md.
 - merge — разрешение конфликтов при объединении веток.
 
 Примеры из истории нашего репозитория:
+
 - 17585f3 — feat: add initial FastAPI application with health check
 - 2986379 — docs: initial project structure and contributing guidelines
 
@@ -207,7 +118,7 @@ Request changes и указывает номер пункта и необход�
 ```bash
 git fetch origin
 git merge origin/main
-``` 
+```
 
 Открыть файлы, отмеченные Git как конфликтующие.
 Согласовать итоговое содержимое, удалить маркеры
@@ -223,23 +134,45 @@ git push
 
 В git add подставить реальные пути всех исправленных файлов.
 После отправки запросить повторное ревью.
-Force-push для разрешения конфликтов не используем.
+Force-push в рабочие ветки запрещён, в том числе при разрешении
+конфликтов. Не используем git push --force и git push --force-with-lease.
 
 ## 7. Защита ветки
 
-Защищённая ветка: main.
+Защищённая ветка: `main`. Механизм по практике — GitHub Rulesets.
 
-ЗАПОЛНИТЬ: название правила и механизм защиты
-(Ruleset или классический Branch protection).
+### Настройки по шагу 2.2 практики №2
 
-ЗАПОЛНИТЬ: фактически включённые настройки из GitHub:
-- активность правила и целевая ветка;
-- обязательность PR и количество approvals;
-- сброс approvals после новых коммитов;
-- требование закрывать обсуждения;
-- запреты force-push и удаления;
-- возможность обхода защиты администратором;
-- дополнительные правила, если они включены.
+Таблица описывает требуемую конфигурацию. Администратору необходимо
+сверить её с фактическими настройками в Settings → Rules → Rulesets.
+Эта сверка зафиксирована.
+
+| Настройка                                                        | Требуемое значение                                     |
+| ---------------------------------------------------------------- | ------------------------------------------------------ |
+| Ruleset Name                                                     | `protect-main`                                         |
+| Enforcement status                                               | `Active`                                               |
+| Target branches                                                  | `Include default branch` — `main`                      |
+| Bypass list                                                      | Пустой, без исключений для владельца и администраторов |
+| Restrict deletions                                               | Включено: удаление ветки запрещено                     |
+| Block force pushes                                               | Включено: принудительная перезапись истории запрещена  |
+| Require a pull request before merging                            | Включено: изменения только через PR                    |
+| Required approvals                                               | `1`, от другого участника с правом записи              |
+| Dismiss stale pull request approvals when new commits are pushed | Включено: новые коммиты сбрасывают одобрение           |
+| Require conversation resolution before merging                   | Включено: обсуждения закрываются до объединения        |
+| Require status checks to pass                                    | Выключено до подключения CI в практике №5              |
+
+`Require linear history` — необязательное правило. Его включают только
+при согласованном использовании squash или rebase для объединения PR.
+Фактическое состояние этой настройки должен уточнить администратор.
+
+При указанной конфигурации прямой push в `main` запрещён всем,
+включая владельца. После новых коммитов требуется повторное одобрение PR.
+Для GitHub Flow дополнительная защищённая ветка `develop` не нужна.
+
+Если правило временно отключают, в issue или этом документе фиксируют,
+кто, когда и зачем его отключил и когда восстановил статус `Active`.
+
+### Проверка защиты
 
 Фактический вывод при попытке прямого push из шага 3.1:
 
@@ -250,31 +183,26 @@ Writing objects: 100% (1/1), 209 bytes | 209.00 KiB/s, done.
 Total 1 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
 remote: error: GH013: Repository rule violations found for refs/heads/main.
 remote: Review all repository rules at https://github.com/Golovakhin/app-conf-project-conditions/rules?ref=refs%2Fheads%2Fmain
-remote: 
+remote:
 remote: - Changes must be made through a pull request.
-remote: 
+remote:
 To https://github.com/Golovakhin/app-conf-project-conditions
  ! [remote rejected] main -> main (push declined due to repository rule violations)
 error: failed to push some refs to 'https://github.com/Golovakhin/app-conf-project-conditions'
 ```
 
-Результат проверки force-push:
-ЗАПОЛНИТЬ: вставить собственную строку отказа,
-указывающую на запрет force-push.
-
 Для main как default-ветки отказ удаления сам по себе
 не доказывает работу правила Restrict deletions.
 
-TODO (модуль 3, практика №5): после появления CI включить
-Require status checks to pass и сделать обязательными
-проверки линтера и тестов. Пока CI не настроен,
-зелёный пайплайн не является условием объединения.
+> TODO (модуль 3, практика №5): после появления CI-пайплайна включить в ruleset `protect-main`
+> правило «Require status checks to pass» и добавить в список обязательных проверок джобы
+> линтера и тестов. До этого момента зелёный пайплайн не является условием merge.
 
 ## 8. Контакты
 
 - Монахов Георгий — Team Lead, @Surdis1.
 - Головахин Андрей — Backend Developer, @teftelh.
-- Савченко Станислав — Frontend / DevOps, @ssav4enkoo.
+- Савченко Станислав — DevOps, @ssav4enkoo.
 
 Канал команды: Telegram.
 ЗАПОЛНИТЬ: ссылка на чат или способ присоединения через участника.
@@ -295,4 +223,7 @@ Require status checks to pass и сделать обязательными
 
 TODO (модуль 3): добавить команду запуска автоматических тестов.
 До этого автор описывает ручную проверку в каждом PR.
+
+```
+
 ```
