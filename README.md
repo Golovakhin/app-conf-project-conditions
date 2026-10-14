@@ -46,11 +46,44 @@
 
 
 
-\## Установка и запуск
+## Запуск через Docker Compose
 
+Нужно: Docker с Compose v2 или новее (`docker compose version` отвечает), свободный порт 8000.
 
+1. Создать файл с переменными окружения из примера:
 
-(Будет добавлено позже)
+   ```bash
+   cp .env.example .env            # Windows PowerShell: Copy-Item .env.example .env
+   ```
+
+   Открыть `.env` и заменить `changeme` на свой пароль базы (только латинские буквы и цифры).
+
+2. Поднять стек:
+
+   ```bash
+   docker compose up --build
+   ```
+
+3. Проверить:
+
+   ```powershell
+   curl.exe -i http://localhost:8000/health
+   ```
+
+   Ожидаемый ответ: `HTTP/1.1 200 OK` и `{"status":"healthy","database":"ok"}`.
+
+Порт 8000 занят — задайте в `.env` `APP_PORT=8001` и проверяйте `http://localhost:8001/health`.
+
+Остановить: `Ctrl+C` или `docker compose down`. Удалить стек вместе с данными базы: `docker compose down -v`.
+
+## Локальная разработка без Docker
+
+```bash
+uv sync
+uv run uvicorn main:app --reload
+```
+
+Базы в этом режиме нет: `/` отвечает `200`, `/health` — `503` с `"DATABASE_URL is not set"`. Так и должно быть.
 
 
 
